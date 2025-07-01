@@ -2,19 +2,22 @@ import requests
 
 # This module provides a CurrencyConverter class that allows you to convert amounts between different currencies using an external API.
 # It uses the ExchangeRate-API to fetch the latest exchange rates and perform conversions.
- 
 
-class CurrencyConverter:
-    def __init__(self, api_key: str):
-        self.base_url = f"https://v6.exchangerate-api.com/v6/{api_key}/latest/"
-    
-    def convert(self, amount:float, from_currency:str, to_currency:str):
-        """Convert the amount from one currency to another"""
-        url = f"{self.base_url}/{from_currency}"
-        response = requests.get(url)
-        if response.status_code != 200:
-            raise Exception("API call failed:", response.json())
-        rates = response.json()["conversion_rates"]
-        if to_currency not in rates:
-            raise ValueError(f"{to_currency} not found in exchange rates.")
-        return amount * rates[to_currency]
+# Note: The class is not used in the current implementation of the agent tools.
+# The agent tools use AlphaVantage via arthamatic_op_tool.py for currency conversion. so no need to use this class. 
+# keep this code for future reference if needed.
+
+#class CurrencyConverter:
+#    def __init__(self, api_key: str):
+#        self.base_url = f"https://v6.exchangerate-api.com/v6/{api_key}/latest/"
+#    
+#    def convert(self, amount:float, from_currency:str, to_currency:str):
+#        """Convert the amount from one currency to another"""
+#        url = f"{self.base_url}/{from_currency}"
+#        response = requests.get(url)
+#        if response.status_code != 200:
+#            raise Exception("API call failed:", response.json())
+#        rates = response.json()["conversion_rates"]
+#        if to_currency not in rates:
+#            raise ValueError(f"{to_currency} not found in exchange rates.")
+#        return amount * rates[to_currency]

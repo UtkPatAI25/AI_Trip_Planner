@@ -4,6 +4,10 @@ load_dotenv()
 from langchain.tools import tool
 from langchain_community.utilities.alpha_vantage import AlphaVantageAPIWrapper
 
+# This file provides arithmetic tools (add, multiply) and a real-time currency converter, 
+# all usable as LangChain tools for agent workflows.
+
+
 @tool
 def multiply(a: int, b: int) -> int:
     """
