@@ -2,7 +2,9 @@
 #Exposes a /query endpoint that receives user questions (e.g., "Plan a trip to Goa for 5 days").
 #Uses the GraphBuilder agent to process the query, generate a plan, and return the result as JSON.
 
-from fastapi import FastAPI
+from logger.logger import logger
+from fastapi import FastAPI, Request
+from exception.global_exception_handler import global_exception_handler
 from fastapi.middleware.cors import CORSMiddleware
 from agent.agentic_workflow import GraphBuilder
 from utils.save_to_document import save_document
@@ -11,9 +13,16 @@ import os
 import datetime
 from dotenv import load_dotenv
 from pydantic import BaseModel
+
+
+
 load_dotenv()
 
 app = FastAPI()
+
+# Register global exception handler
+app.add_exception_handler(Exception, global_exception_handler)
+
 
 # Adds CORS support so API can be called from any frontend (e.g. Streamlit app).
 # In production, restrict allow_origins.
@@ -37,6 +46,7 @@ class QueryRequest(BaseModel):
 # Function to process the user query
 async def query_travel_agent(query:QueryRequest):
     try:
+        logger.info(f"Received query: {query}")
         print(query)
         graph = GraphBuilder(model_provider="groq")
         react_app=graph()
@@ -69,9 +79,14 @@ async def query_travel_agent(query:QueryRequest):
         # Ensure output directory exists
         os.makedirs("output", exist_ok=True)
         # Save the output as a Markdown file in the output folder
-        save_document(final_output, f"output/plan_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.md")
+        filename = f"output/plan_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+        save_document(final_output, filename)
+        logger.info(f"Saved plan to {filename}")
         
+        logger.info("Successfully processed query.")
         return {"answer": final_output}
     #If anything goes wrong, returns a 500 error with the exception message.
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        logger.error(f"Error in /query endpoint: {e}", exc_info=True)
+        raise  # This will be caught by the global handler
+        #return JSONResponse(status_code=500, content={"error": str(e)})
