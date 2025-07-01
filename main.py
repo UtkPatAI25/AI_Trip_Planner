@@ -66,6 +66,11 @@ async def query_travel_agent(query:QueryRequest):
         else:
             final_output = str(output)
         
+        # Ensure output directory exists
+        os.makedirs("output", exist_ok=True)
+        # Save the output as a Markdown file in the output folder
+        save_document(final_output, f"output/plan_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.md")
+        
         return {"answer": final_output}
     #If anything goes wrong, returns a 500 error with the exception message.
     except Exception as e:
